@@ -45,22 +45,6 @@ function Table() {
     getAllLogs();
   }, [currentPage, logsPerPage]);
 
-  const GlobalSearchLogs = async (e) => {
-    const valueSearch = e.target.value;
-    if (valueSearch === "") {
-      getAllLogs();
-    } else {
-      var logs = [];
-      title.map((element) => {
-        const response = _.filter(logsFilter, [element, valueSearch]);
-        if (response.length) {
-          logs = logsSearch.concat(response);
-          setDataLogs(_.uniq(logs));
-        }
-      });
-    }
-  };
-
   const fetchLogs = async (data) => {
     console.log("====================================");
     console.log(data);
@@ -87,11 +71,25 @@ function Table() {
       serverType === "" &&
       serverHost === ""
     ) {
-   
       // fetchLogs([{}])
-      
+      getAllLogs();
     } else {
       fetchLogs(logs);
+    }
+  };
+  const GlobalSearchLogs = async (e) => {
+    const valueSearch = e.target.value;
+    if (valueSearch === "") {
+      getAllLogs();
+    } else {
+      var logs = [];
+      title.map((element) => {
+        const response = _.filter(logsFilter, [element, valueSearch]);
+        if (response.length) {
+          logs = logsSearch.concat(response);
+          setDataLogs(_.uniq(logs));
+        }
+      });
     }
   };
 
