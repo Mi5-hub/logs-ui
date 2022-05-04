@@ -125,3 +125,15 @@ input[type="search"] {
 #outlined-select-currency-label{
   margin-left: 8px;
 }
+.search_side_menu{
+  width: 259px;
+  font-size: small;
+}
+.container_button_filter{
+  display: flex;
+  justify-content: space-between;
+}
+
+#long-button{
+  color: aliceblue;
+}

@@ -3,22 +3,35 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { Icon } from "@iconify/react";
 import "../css/tableTailwind.css";
-import axios from "axios";
+import Service from "./Service/logsService";
+
 const _ = require("lodash");
 
-const ITEM_HEIGHT = 35;
+const ITEM_HEIGHT = 60;
 
-export default function FilterColumn({ isClickedAll }) {
+export default function FilterColumn() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [title, setTitle] = useState([]);
-  const [isSelectAll, setIsSelectAll] = useState(true);
+  const [isHideAll, setIsHideAll] = useState(false);
+  const [titleFiltered, setTitleFiltered] = useState([]);
+  const [clear, setClear] = useState(false);
   const open = Boolean(anchorEl);
   const getTitle = async () => {
-    const logs = await axios.get("http://localhost:5050/logs");
+    const logs = await Service.getLogs();
     setTitle(
+      _.without(
+        Object.keys(logs.data[0]),
+        "_id",
+        "__v",
+        "response",
+        "createdAt",
+        "updatedAt"
+      )
+    );
+    setTitleFiltered(
       _.without(
         Object.keys(logs.data[0]),
         "_id",
@@ -31,55 +44,73 @@ export default function FilterColumn({ isClickedAll }) {
   };
   useEffect(() => {
     getTitle();
-    const test = async () => {
-      if (isClickedAll) {
-        await document.querySelector("#long-button").click();
-        title.map((val) => {
-          document.getElementById(`${val}-head`).style.display = "table-cell";
-        });
-      
-        await selectAll();
+  }, []);
+  const setCheckboxStatus = async () => {
+    title.map(async (el) => {
+      const cellContent = document.getElementsByClassName(el);
+      for (let index = 0; index < cellContent.length; index++) {
+        if (cellContent[index].style.display === "none") {
+          document.getElementById(el).checked = true;
+        }
       }
-    };
-    test();
-  }, [isClickedAll]);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+    });
   };
+  const findColumn = async (e) => {
+    const val = e.target.value;
+    if (val === "") {
+      await setTitleFiltered(title);
+      setClear(false);
+      await setCheckboxStatus();
+    } else {
+      setClear(true);
+      setTitleFiltered(title.filter((e) => e.startsWith(val)));
+    }
+  };
+
   const handleClose = () => {
+    getTitle();
     setAnchorEl(null);
+    setClear(false)
   };
 
   const filterColumn = async (val) => {
+    setIsHideAll(false);
     const cellContent = document.getElementsByClassName(val);
     if (document.getElementById(val).checked) {
-      document.getElementById(val).value = val;
       for (let index = 0; index < cellContent.length; index++) {
         cellContent[index].style.display = "none";
       }
       document.getElementById(`${val}-head`).style.display = "none";
-      document.getElementById(val).name = val;
     } else {
       for (let index = 0; index < cellContent.length; index++) {
         cellContent[index].style.display = "table-cell";
       }
       document.getElementById(`${val}-head`).style.display = "table-cell";
-      document.getElementById(val).name = "";
     }
   };
-  const selectAll = async () => {
+
+  const showAll = async () => {
+    setIsHideAll(false);
+    document.querySelector("#standard-basic").value = "";
     title.map((el) => {
-      if (isSelectAll) {
-        if (document.getElementById(el).checked === false) {
-          document.getElementById(el).click();
-        }
-      } else {
-        if (document.getElementById(el).checked === true) {
-          document.getElementById(el).click();
-        }
+      if (document.getElementById(el).checked === true) {
+        document.getElementById(el).click();
       }
     });
-    setIsSelectAll(!isSelectAll);
+  };
+  const hideAll = async () => {
+    setIsHideAll(true);
+    document.querySelector("#standard-basic").value = "";
+    title.map((el) => {
+      if (document.getElementById(el).checked === false) {
+        document.getElementById(el).click();
+      }
+    });
+  };
+  const showMenu = async (event) => {
+    setAnchorEl(event.currentTarget);
+    (await isHideAll) ? hideAll() : showAll();
+    await setCheckboxStatus();
   };
   return (
     <div>
@@ -89,7 +120,7 @@ export default function FilterColumn({ isClickedAll }) {
         aria-controls={open ? "long-menu" : undefined}
         aria-expanded={open ? "true" : undefined}
         aria-haspopup="true"
-        onClick={handleClick}
+        onClick={showMenu}
       >
         <MoreVertIcon />
       </IconButton>
@@ -110,12 +141,15 @@ export default function FilterColumn({ isClickedAll }) {
       >
         <MenuItem>
           <div className="container_filter_x">
-            <button onClick={(e) => selectAll()} className="btn_select_all">
-              <Icon icon="ic:baseline-menu-open" />
-              {isSelectAll ? "Hide All" : "Show All"}
-            </button>
+            <TextField
+              id="standard-basic"
+              label="Find column"
+              variant="standard"
+              className="search_side_menu"
+              onChange={(e) => findColumn(e)}
+            />
             <ul>
-              {title.map((el, i) => (
+              {titleFiltered.map((el, i) => (
                 <li key={i}>
                   <input
                     type="checkbox"
@@ -128,6 +162,31 @@ export default function FilterColumn({ isClickedAll }) {
             </ul>
           </div>
         </MenuItem>
+        <div className="container_button_filter">
+          {clear ? null : (
+            <Button size="small" onClick={(e) => hideAll()} variant="text">
+              Hide All
+            </Button>
+          )}
+          {clear ? null : (
+            <Button size="small" onClick={(e) => showAll()} variant="text">
+              Show All
+            </Button>
+          )}
+          {clear ? (
+            <Button
+              size="small"
+              onClick={(e) => {
+                document.querySelector("#standard-basic").value = "";
+                getTitle();
+                setClear(false);
+              }}
+              variant="text"
+            >
+              Clear
+            </Button>
+          ) : null}
+        </div>
       </Menu>
     </div>
   );

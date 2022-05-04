@@ -6,32 +6,35 @@ import "../css/tableTailwind.css";
 import FilterColumn from "./FilterColumn";
 import Pagination from "./Pagination";
 import { useSelector } from "react-redux";
+import Service from "./Service/logsService";
 const _ = require("lodash");
 function Table() {
   const [dataLogs, setDataLogs] = useState([]);
   const [title, setTitle] = useState([]);
-  var changedBy = "";
-  var login = "";
-  var changedAt = "";
-  var serverType = "";
-  var serverHost = "";
+  var logsValue = {
+    changedAt: "",
+    changedBy: "",
+    login: "",
+    serverHost: "",
+    serverType: "",
+  };
   const [logsSearch, setLogsSearch] = useState([]);
   const [logsFilter, setLogsFilter] = useState([]);
-  const [isClickedAll, setIsClickedAll] = useState(false);
 
-  //******************************  Pagination *****************************/
+  //****************************** START Pagination *****************************/
   const currentPage = useSelector((state) => state.page.value);
-  const [logsPerPage, setLogsPerPage] = useState(5);
+  const [logsPerPage, setLogsPerPage] = useState(10);
   const indexOfLastPost = currentPage * logsPerPage;
   const indexOfFirstPost = indexOfLastPost - logsPerPage;
+  //****************************** END Pagination *****************************/
 
   const getAllLogs = async () => {
-    const logs = await axios.get("http://localhost:5050/logs");
+    const logs = await Service.getLogs()
     setLogsFilter(logs.data);
     setDataLogs(logs.data.slice(indexOfFirstPost, indexOfLastPost));
     setTitle(
       _.without(
-        Object.keys(logs.data[1]),
+        Object.keys(logs.data[0]),
         "__v",
         "_id",
         "createdAt",
@@ -46,41 +49,48 @@ function Table() {
   }, [currentPage, logsPerPage]);
 
   const fetchLogs = async (data) => {
-    console.log("====================================");
-    console.log(data);
-    console.log("====================================");
-    const response = await axios.post("http://localhost:5050/logs", data);
+    const response = await Service.postLogs(data)
     setDataLogs(response.data);
   };
+  const retraceTable = async () => {
+    title.map((el) => {
+      const cellContent = document.getElementsByClassName(el);
+      for (let index = 0; index < cellContent.length; index++) {
+        cellContent[index].style.display = "table-cell";
+        document.getElementById(`${el}-head`).style.display = "table-cell";
+      }
+    });
+  };
+
+  //********************** START SEARCH LOGS ****************************** */
 
   const postSearchLogs = async () => {
-    const logs = [
-      {
-        changedAt,
-        login,
-        changedBy,
-        serverType,
-        serverHost,
-      },
-    ];
-
     if (
-      changedAt === "" &&
-      login === "" &&
-      changedBy === "" &&
-      serverType === "" &&
-      serverHost === ""
+      logsValue["changedAt"] === "" &&
+      logsValue["login"] === "" &&
+      logsValue["changedBy"] === "" &&
+      logsValue["serverType"] === "" &&
+      logsValue["serverHost"] === ""
     ) {
-      // fetchLogs([{}])
       getAllLogs();
+      await retraceTable();
+
+      logsValue = {
+        changedAt: "",
+        changedBy: "",
+        login: "",
+        serverHost: "",
+        serverType: "",
+      };
     } else {
-      fetchLogs(logs);
+      fetchLogs(logsValue);
     }
   };
   const GlobalSearchLogs = async (e) => {
     const valueSearch = e.target.value;
     if (valueSearch === "") {
       getAllLogs();
+      await retraceTable();
     } else {
       var logs = [];
       title.map((element) => {
@@ -93,9 +103,7 @@ function Table() {
     }
   };
 
-  //********************** SEARCH LOGS ****************************** */
-
-  //********************** SEARCH LOGS ****************************** */
+  //********************** END SEARCH LOGS ****************************** */
 
   return (
     <div className="container mx-auto px-4 mt-5">
@@ -114,7 +122,11 @@ function Table() {
           select
           label="Page"
           value={logsPerPage}
-          onChange={(e) => setLogsPerPage(e.target.value)}
+          onChange={(e) => {
+            setLogsPerPage(e.target.value);
+            getAllLogs();
+            retraceTable();
+          }}
         >
           {pages.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -132,68 +144,22 @@ function Table() {
             <thead className="table_head">
               <tr>
                 <th scope="col" className="px-6 py-1">
-                  <FilterColumn isClickedAll={isClickedAll}></FilterColumn>
+                  <FilterColumn></FilterColumn>
                 </th>
-                <th scope="col" className="px-6 py-1" id="changedAt-head">
-                  <input
-                    type="search"
-                    onChange={(e) => {
-                      changedAt = e.target.value;
-                      setTimeout(() => {
-                        postSearchLogs();
-                      }, 1000);
-                    }}
-                    placeholder="ChangedAt"
-                  ></input>
-                </th>
-                <th scope="col" className="px-6 py-1" id="login-head">
-                  <input
-                    type="search"
-                    onChange={(e) => {
-                      login = e.target.value;
-                      setTimeout(() => {
-                        postSearchLogs();
-                      }, 1000);
-                    }}
-                    placeholder="Login"
-                  ></input>
-                </th>
-                <th scope="col" className="px-6 py-1" id="changedBy-head">
-                  <input
-                    type="search"
-                    onChange={(e) => {
-                      changedBy = e.target.value;
-                      setTimeout(() => {
-                        postSearchLogs();
-                      }, 1000);
-                    }}
-                    placeholder="ChangedBy"
-                  ></input>
-                </th>
-                <th scope="col" className="px-6 py-1" id="serverType-head">
-                  <input
-                    type="search"
-                    onChange={(e) => {
-                      serverType = e.target.value;
-                      setTimeout(() => {
-                        postSearchLogs();
-                      }, 1000);
-                    }}
-                    placeholder="Server Type"
-                  ></input>
-                </th>
-                <th scope="col" className="px-6 py-1" id="serverHost-head">
-                  <input
-                    type="search"
-                    onChange={(e) => {
-                      serverHost = e.target.value;
-                      setTimeout(() => {
-                        postSearchLogs();
-                      }, 1000);
-                    }}
-                    placeholder="ServerHost"
-                  ></input>
-                </th>
+                {title.map((el) => (
+                  <th scope="col" className="px-6 py-1" id={`${el}-head`}>
+                    <input
+                      type="search"
+                      onChange={(e) => {
+                        logsValue[el] = e.target.value;
+                        setTimeout(() => {
+                          postSearchLogs();
+                        }, 5000);
+                      }}
+                      placeholder={el}
+                    ></input>
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -213,7 +179,9 @@ function Table() {
         </div>
       </div>
       <Pagination
-        totalposts={logsFilter.length}
+        getAllLogs={getAllLogs}
+        retraceTable={retraceTable}
+        totalLogs={logsFilter.length}
         logsperpage={logsPerPage}
       ></Pagination>
     </div>
@@ -232,7 +200,7 @@ const pages = [
     label: "10",
   },
   {
-    value: 20,
-    label: "20",
+    value: 50,
+    label: "50",
   },
 ];
