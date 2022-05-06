@@ -6,41 +6,18 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import "../css/tableTailwind.css";
-import Service from "./Service/logsService";
-
 const _ = require("lodash");
 
 const ITEM_HEIGHT = 60;
 
-export default function FilterColumn() {
+export default function FilterColumn({title}) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [title, setTitle] = useState([]);
   const [isHideAll, setIsHideAll] = useState(false);
   const [titleFiltered, setTitleFiltered] = useState([]);
   const [clear, setClear] = useState(false);
   const open = Boolean(anchorEl);
   const getTitle = async () => {
-    const logs = await Service.getLogs();
-    setTitle(
-      _.without(
-        Object.keys(logs.data[0]),
-        "_id",
-        "__v",
-        "response",
-        "createdAt",
-        "updatedAt"
-      )
-    );
-    setTitleFiltered(
-      _.without(
-        Object.keys(logs.data[0]),
-        "_id",
-        "__v",
-        "response",
-        "createdAt",
-        "updatedAt"
-      )
-    );
+    setTitleFiltered(title);
   };
   useEffect(() => {
     getTitle();

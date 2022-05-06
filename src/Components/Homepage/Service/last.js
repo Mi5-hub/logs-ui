@@ -6,18 +6,12 @@ import "../css/tableTailwind.css";
 import FilterColumn from "./FilterColumn";
 import Pagination from "./Pagination";
 import { useSelector } from "react-redux";
-import Service from "./Service/logsService";
 const _ = require("lodash");
-function Table() {
+function Table({ linkGetData }) {
   const [dataLogs, setDataLogs] = useState([]);
   const [title, setTitle] = useState([]);
-  var logsValue = {
-    changedAt: "",
-    changedBy: "",
-    login: "",
-    serverHost: "",
-    serverType: "",
-  };
+  var logsValue = {};
+
   const [logsSearch, setLogsSearch] = useState([]);
   const [logsFilter, setLogsFilter] = useState([]);
 
@@ -29,7 +23,7 @@ function Table() {
   //****************************** END Pagination *****************************/
 
   const getAllLogs = async () => {
-    const logs = await Service.getLogs()
+    const logs = await axios.get(linkGetData);
     setLogsFilter(logs.data);
     setDataLogs(logs.data.slice(indexOfFirstPost, indexOfLastPost));
     setTitle(
@@ -39,7 +33,8 @@ function Table() {
         "_id",
         "createdAt",
         "updatedAt",
-        "response"
+        "response",
+        "id"
       )
     );
   };
@@ -48,10 +43,6 @@ function Table() {
     getAllLogs();
   }, [currentPage, logsPerPage]);
 
-  const fetchLogs = async (data) => {
-    const response = await Service.postLogs(data)
-    setDataLogs(response.data);
-  };
   const retraceTable = async () => {
     title.map((el) => {
       const cellContent = document.getElementsByClassName(el);
@@ -63,43 +54,82 @@ function Table() {
   };
 
   //********************** START SEARCH LOGS ****************************** */
-
-  const postSearchLogs = async () => {
-    if (
-      logsValue["changedAt"] === "" &&
-      logsValue["login"] === "" &&
-      logsValue["changedBy"] === "" &&
-      logsValue["serverType"] === "" &&
-      logsValue["serverHost"] === ""
-    ) {
-      getAllLogs();
+  const [titleWithout, setTitleWithout] = useState([]);
+  const searchColumnx = async (val, el) => {
+    logsValue[el] = val;
+    if (logsValue[el] === "") {
+      console.log("====================================");
+      console.log("tanteraka");
+      console.log("====================================");
+      await getAllLogs();
       await retraceTable();
-
-      logsValue = {
-        changedAt: "",
-        changedBy: "",
-        login: "",
-        serverHost: "",
-        serverType: "",
-      };
+      title.map((i) => {
+        // document.querySelector(`#${i}-head > input[type=search]`).value = "";
+      });
     } else {
-      fetchLogs(logsValue);
+      var resultFilter = [];
+      var result = [];
+      title.map((i) => {
+        const cellContent = document.getElementsByClassName(i);
+        for (let index = 0; index < cellContent.length; index++) {
+          if (cellContent[index].style.display === "none") {
+            titleWithout.push(i);
+          }
+        }
+      });
+
+      dataLogs.map((element) => {
+        const logs = [element].filter((element) => element[el].startsWith(val));
+        if (logs.length) {
+          result.push(logs[0]);
+        }
+      });
+
+      if (titleWithout.length) {
+        result.map((o) => {
+          resultFilter.push(_.omit(o, _.uniq(titleWithout)));
+          setDataLogs(resultFilter);
+        });
+      } else {
+        setDataLogs(result);
+      }
     }
   };
+  const searchColumn = async (val, el) => {
+    logsValue[el] = val;
+    if (logsValue[el] === "") {
+      getAllLogs();
+      logsValue = {};
+    } else {
+      var result = [];
+      dataLogs.map((element) => {
+        const logs = [element].filter((element) => element[el].startsWith(val));
+        if (logs.length) {
+          result.push(logs[0]);
+        }
+      });
+      setDataLogs(result);
+    }
+  };
+
   const GlobalSearchLogs = async (e) => {
     const valueSearch = e.target.value;
     if (valueSearch === "") {
       getAllLogs();
       await retraceTable();
     } else {
-      var logs = [];
-      title.map((element) => {
-        const response = _.filter(logsFilter, [element, valueSearch]);
-        if (response.length) {
-          logs = logsSearch.concat(response);
-          setDataLogs(_.uniq(logs));
-        }
+      var result = [];
+      logsFilter.map((element) => {
+        title.map((el) => {
+          const logs = [element].filter((element) =>
+            element[el].toString().startsWith(valueSearch)
+          );
+          if (logs.length) {
+            result.push(logs[0]);
+          }
+        });
       });
+      setDataLogs(result);
     }
   };
 
@@ -144,17 +174,14 @@ function Table() {
             <thead className="table_head">
               <tr>
                 <th scope="col" className="px-6 py-1">
-                  <FilterColumn></FilterColumn>
+                  <FilterColumn linkGetData={linkGetData}></FilterColumn>
                 </th>
                 {title.map((el) => (
                   <th scope="col" className="px-6 py-1" id={`${el}-head`}>
                     <input
                       type="search"
                       onChange={(e) => {
-                        logsValue[el] = e.target.value;
-                        setTimeout(() => {
-                          postSearchLogs();
-                        }, 5000);
+                        searchColumn(e.target.value, el);
                       }}
                       placeholder={el}
                     ></input>
@@ -163,17 +190,25 @@ function Table() {
               </tr>
             </thead>
             <tbody>
-              {dataLogs &&
-                dataLogs.map((el, index) => (
-                  <tr className="bg-white border-b  hover:bg-gray-50">
-                    <td className={`px-6 py-4 `}>{index}</td>
-                    <td className={`px-6 py-4 changedAt`}>{el.changedAt}</td>
-                    <td className={`px-6 py-4 login`}>{el.login}</td>
-                    <td className={`px-6 py-4 changedBy`}>{el.changedBy}</td>
-                    <td className={`px-6 py-4 serverType`}>{el.serverType}</td>
-                    <td className={`px-6 py-4 serverHost`}>{el.serverHost}</td>
-                  </tr>
-                ))}
+              {dataLogs.map((el, index) => (
+                <tr className="bg-white border-b  hover:bg-gray-50">
+                  <td className={`px-6 py-4`}>{index}</td>
+                  {Object.entries(
+                    _.omit(el, [
+                      "_id",
+                      "id",
+                      "__v",
+                      "createdAt",
+                      "updatedAt",
+                      "response",
+                    ])
+                  ).map((i) => (
+                    <td className={`px-6 py-4 ${i[0]}`} key={i[1]}>
+                      {i[1]}
+                    </td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

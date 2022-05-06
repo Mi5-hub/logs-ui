@@ -5,13 +5,15 @@ import {
   Route
 } from "react-router-dom";
 import "./App.css";
-import Table from "./Components/Homepage/Table";
+import HomePage from "./Components/HomePage";
+
 function App() {
+
   return (
     <div className="App">
       <Router>
         <Routes>
-          <Route path="/" element={<Table/>} />
+          <Route path="/" element={<HomePage/>}/>
         </Routes>
       </Router>
     </div>
