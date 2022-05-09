@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
@@ -9,11 +8,11 @@ import { useSelector } from "react-redux";
 const _ = require("lodash");
 function DataGrid({
   columns,
-  rows,
+  data,
   pageSize,
   rowsPerPageOptions,
   columnHeight,
-  globalSearch,
+  noGlobalSearch,
   options,
   paginations,
 }) {
@@ -22,27 +21,26 @@ function DataGrid({
   columns.map((el) => {
     title.push(el.field);
   });
-  var logsValue = {};
+  var logsValue = {}; 
 
-  const [logsSearch, setLogsSearch] = useState([]);
   const [logsFilter, setLogsFilter] = useState([]);
 
   //****************************** START Pagination *****************************/
   const currentPage = useSelector((state) => state.page.value);
-  const [logsPerPage, setLogsPerPage] = useState(paginations?pageSize:10);
- 
+  const [logsPerPage, setLogsPerPage] = useState(pageSize ? pageSize : 10);
+
   const indexOfLastPost = currentPage * logsPerPage;
   const indexOfFirstPost = indexOfLastPost - logsPerPage;
   //****************************** END Pagination *****************************/
 
   const getAllLogs = async () => {
-    setLogsFilter(rows);
-    setDataLogs(rows.slice(indexOfFirstPost, indexOfLastPost));
+    setLogsFilter(data);
+    setDataLogs(data.slice(indexOfFirstPost, indexOfLastPost));
   };
 
   useEffect(() => {
     getAllLogs();
-  }, [currentPage, logsPerPage, rows, pageSize]);
+  }, [currentPage, logsPerPage, data, pageSize]);
 
   const retraceTable = async () => {
     title.map((el) => {
@@ -66,11 +64,14 @@ function DataGrid({
     } else {
       var result = [];
       logsFilter.map((element) => {
-        const logs = [element].filter((element) => element[el].startsWith(val));
+        const logs = [element].filter((element) =>
+          element[el].toString().startsWith(val)
+        );
         if (logs.length) {
           result.push(logs[0]);
         }
       });
+      setLogsFilter(result);
       setDataLogs(result);
     }
   };
@@ -81,6 +82,7 @@ function DataGrid({
       getAllLogs();
       await retraceTable();
     } else {
+      await retraceTable();
       var result = [];
       logsFilter.map((element) => {
         title.map((el) => {
@@ -97,15 +99,11 @@ function DataGrid({
   };
 
   //********************** END SEARCH LOGS ****************************** */
-  const titlePrime = [
-    { field: "userId", headerName: "USER", width: 90 },
-    { field: "title", headerName: "TITLE", width: 90 },
-    { field: "body", headerName: "BODY", width: 90 },
-  ];
+
   return (
     <div className="container mx-auto px-4 mt-5">
       <div className="mb-5 container_search">
-        {globalSearch ? (
+        {noGlobalSearch ? null : (
           <TextField
             className="input_search"
             id="outlined-basic"
@@ -114,7 +112,7 @@ function DataGrid({
             size="small"
             onChange={(e) => GlobalSearchLogs(e)}
           />
-        ) : null}
+        )}
 
         {options ? (
           <TextField
@@ -128,18 +126,24 @@ function DataGrid({
               retraceTable();
             }}
           >
-            {rowsPerPageOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
+            {rowsPerPageOptions
+              ? rowsPerPageOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))
+              : defaultOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
           </TextField>
         ) : null}
       </div>
       <div className="container_table">
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
           <table
-            className="w-full text-sm text-left text-gray-500 "
+            className=" w-full text-sm text-left text-gray-500"
             id="table_logs"
           >
             <thead className="table_head">
@@ -164,7 +168,10 @@ function DataGrid({
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody
+              className="overflow-y-scroll w-full"
+              style={{ height: "20vh" }}
+            >
               {dataLogs.map((el, index) => (
                 <tr className="bg-white border-b  hover:bg-gray-50">
                   <td className={`py-${columnHeight}`}></td>
@@ -192,3 +199,18 @@ function DataGrid({
 }
 
 export default DataGrid;
+
+const defaultOptions = [
+  {
+    value: 5,
+    label: "5",
+  },
+  {
+    value: 10,
+    label: "10",
+  },
+  {
+    value: 20,
+    label: "20",
+  },
+];

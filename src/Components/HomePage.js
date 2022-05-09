@@ -4,28 +4,30 @@ import axios from "axios";
 
 
 function HomePage() {
-  const [rows, setRows] = useState([]);
+  const [data, setData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(
         "https://jsonplaceholder.typicode.com/posts"
       );
-      setRows(response.data);
+      setData(response.data);
     };
+    
     fetchData();
+
   }, []);
 
   return (
     <div>
       <DataGrid
-        rows={rows}
+        data={data}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={options}
-        columnHeight={1}
-        globalSearch={true}
-        options={true}
-        paginations={true}
+        options
+        // pageSize={5} 
+        // rowsPerPageOptions={options}
+        columnHeight={3}
+        // noGlobalSearch
+        paginations
       />
     </div>
   );
@@ -41,14 +43,14 @@ const columns = [
 const options = [
   {
     value: 5,
-    label: "5",
+    label: "Five",
   },
   {
     value: 10,
-    label: "10",
+    label: "Ten",
   },
   {
-    value: 15,
-    label: "15",
+    value: 20,
+    label: "Twenty",
   },
 ];
