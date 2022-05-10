@@ -4,7 +4,8 @@ import MenuItem from "@mui/material/MenuItem";
 import "../css/tableTailwind.css";
 import FilterColumn from "./FilterColumn";
 import Pagination from "./Pagination";
-import { useSelector } from "react-redux";
+import {useGlobalState } from "./tableSlice";
+
 const _ = require("lodash");
 function DataGrid({
   columns,
@@ -21,16 +22,17 @@ function DataGrid({
   columns.map((el) => {
     title.push(el.field);
   });
-  var logsValue = {}; 
+  var logsValue = {};
 
   const [logsFilter, setLogsFilter] = useState([]);
 
   //****************************** START Pagination *****************************/
-  const currentPage = useSelector((state) => state.page.value);
-  const [logsPerPage, setLogsPerPage] = useState(pageSize ? pageSize : 10);
 
+  const [currentPage] = useGlobalState("currentPage");
+  const [logsPerPage, setLogsPerPage] = useState(pageSize ? pageSize : 10);
   const indexOfLastPost = currentPage * logsPerPage;
   const indexOfFirstPost = indexOfLastPost - logsPerPage;
+  
   //****************************** END Pagination *****************************/
 
   const getAllLogs = async () => {
@@ -189,6 +191,7 @@ function DataGrid({
       {paginations ? (
         <Pagination
           getAllLogs={getAllLogs}
+          currentPage={currentPage}
           retraceTable={retraceTable}
           totalLogs={logsFilter.length}
           logsperpage={logsPerPage}

@@ -3,6 +3,7 @@ import DataGrid from "./Homepage/DataGrid";
 import axios from "axios";
 
 
+
 function HomePage() {
   const [data, setData] = useState([]);
   useEffect(() => {
@@ -12,7 +13,7 @@ function HomePage() {
       );
       setData(response.data);
     };
-    
+
     fetchData();
 
   }, []);
@@ -23,7 +24,7 @@ function HomePage() {
         data={data}
         columns={columns}
         options
-        // pageSize={5} 
+        // pageSize={5}
         // rowsPerPageOptions={options}
         columnHeight={3}
         // noGlobalSearch
