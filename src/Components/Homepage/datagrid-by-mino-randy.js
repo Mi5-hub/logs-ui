@@ -15,6 +15,8 @@ function DataGrid({
   noGlobalSearch,
   options,
   paginations,
+  headPositionText,
+  bodyPositionText,
 }) {
   const [dataLogs, setDataLogs] = useState([]);
   const title = [];
@@ -149,7 +151,13 @@ function DataGrid({
                   <FilterColumn title={title}></FilterColumn>
                 </th>
                 {columns.map((el) => (
-                  <th id={`${el.field}-head`} style={{ textAlign: "left" }}>
+                  <th
+                    id={`${el.field}-head`}
+                    style={{
+                      textAlign: `${headPositionText}`,
+                      width: `${el.width}px`,
+                    }}
+                  >
                     <input
                       type="search"
                       onChange={(e) => {
@@ -166,11 +174,22 @@ function DataGrid({
         <div className="tbl-content">
           <table cellPadding="0" cellSpacing="0" border="0">
             <tbody>
+              <tr>
+                <td className="first-column"></td>
+                <td></td>
+                <td></td>
+              </tr>
               {dataLogs.map((el, index) => (
                 <tr>
                   <td className="first-column"></td>
                   {columns.map((i) => (
-                    <td className={`${i.field}`} style={{ textAlign: "left" }}>
+                    <td
+                      className={`${i.field}`}
+                      style={{
+                        textAlign: `${bodyPositionText}`,
+                        width: `${i.width}px`,
+                      }}
+                    >
                       {el[i.field]}
                     </td>
                   ))}

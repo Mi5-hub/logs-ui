@@ -16,7 +16,9 @@ function DataGrid({
   columnHeight,
   noGlobalSearch,
   options,
-  paginations
+  paginations,
+  headPositionText,
+  bodyPositionText
 }) {
   const [dataLogs, setDataLogs] = useState([]);
   const title = [];
@@ -139,7 +141,8 @@ function DataGrid({
   })), columns.map(el => /*#__PURE__*/React.createElement("th", {
     id: `${el.field}-head`,
     style: {
-      textAlign: "left"
+      textAlign: `${headPositionText}`,
+      width: `${el.width}px`
     }
   }, /*#__PURE__*/React.createElement("input", {
     type: "search",
@@ -158,7 +161,8 @@ function DataGrid({
   }), columns.map(i => /*#__PURE__*/React.createElement("td", {
     className: `${i.field}`,
     style: {
-      textAlign: "left"
+      textAlign: `${bodyPositionText}`,
+      width: `${i.width}px`
     }
   }, el[i.field])))))))), paginations ? /*#__PURE__*/React.createElement(Paginations, {
     getAllLogs: getAllLogs,

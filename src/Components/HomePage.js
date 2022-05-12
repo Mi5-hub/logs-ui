@@ -29,6 +29,8 @@ function HomePage() {
         columnHeight={3}
         // noGlobalSearch
         paginations
+        headPositionText={'center'}
+        // bodyPositionText={'center'}
       />
     </div>
   );
@@ -37,9 +39,9 @@ function HomePage() {
 export default HomePage;
 
 const columns = [
-  { field: "title", headerName: "TITLE", width: 5 },
-  { field: "userId", headerName: "USER", width: 5  },
-  { field: "id", headerName: "BODY  ", width: 5 },
+  { field: "title", headerName: "TITLE", width: 500 },
+  { field: "userId", headerName: "USER", width: 400  },
+  { field: "id", headerName: "BODY  ", width: 450 },
 ];
 const options = [
   {
