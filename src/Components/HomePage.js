@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import DataGrid from "./Homepage/DataGrid";
-import axios from "axios";
 
+import axios from "axios";
+import DataGrid from "./Homepage/datagrid-by-mino-randy";
 
 
 function HomePage() {
@@ -39,7 +39,7 @@ export default HomePage;
 const columns = [
   { field: "title", headerName: "TITLE", width: 5 },
   { field: "userId", headerName: "USER", width: 5  },
-  { field: "body", headerName: "BODY  ", width: 5 },
+  { field: "id", headerName: "BODY  ", width: 5 },
 ];
 const options = [
   {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import "../css/tableTailwind.css";
+import "./table.css"
 import FilterColumn from "./FilterColumn";
 import Pagination from "./Pagination";
 import {useGlobalState } from "./tableSlice";
@@ -32,7 +32,7 @@ function DataGrid({
   const [logsPerPage, setLogsPerPage] = useState(pageSize ? pageSize : 10);
   const indexOfLastPost = currentPage * logsPerPage;
   const indexOfFirstPost = indexOfLastPost - logsPerPage;
-  
+
   //****************************** END Pagination *****************************/
 
   const getAllLogs = async () => {
