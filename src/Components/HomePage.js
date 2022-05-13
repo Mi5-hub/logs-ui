@@ -24,13 +24,13 @@ function HomePage() {
         data={data}
         columns={columns}
         options
-        // pageSize={5}
-        // rowsPerPageOptions={options}
+        pageSize={5}
+        rowsPerPageOptions={options}
         columnHeight={3}
         // noGlobalSearch
         paginations
         headPositionText={'center'}
-        // bodyPositionText={'center'}
+        bodyPositionText={'center'}
       />
     </div>
   );
@@ -39,8 +39,8 @@ function HomePage() {
 export default HomePage;
 
 const columns = [
-  { field: "title", headerName: "TITLE", width: 500 },
-  { field: "userId", headerName: "USER", width: 400  },
+  { field: "title", headerName: "TITLE", width: 200 },
+  { field: "userId", headerName: "USER", width: 50  },
   { field: "body", headerName: "BODY  ", width: 450 },
 ];
 const options = [
