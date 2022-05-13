@@ -15,4 +15,4 @@ The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
 ### Images:
-![Screenshot](Screenshot 2022-05-13 at 15-00-29 React App.png)  
+![Screenshot](image.png)  
