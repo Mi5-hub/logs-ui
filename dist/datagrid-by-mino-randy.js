@@ -155,7 +155,10 @@ function DataGrid({
   }, /*#__PURE__*/React.createElement("table", {
     cellPadding: "0",
     cellSpacing: "0",
-    border: "0"
+    border: "0",
+    style: {
+      marginTop: '1px'
+    }
   }, /*#__PURE__*/React.createElement("tbody", null, dataLogs.map((el, index) => /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
     className: "first-column"
   }), columns.map(i => /*#__PURE__*/React.createElement("td", {

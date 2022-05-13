@@ -5,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import "./table.css"
+import "./datagrid.css"
 const _ = require("lodash");
 
 const ITEM_HEIGHT = 60;

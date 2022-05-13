@@ -41,7 +41,7 @@ export default HomePage;
 const columns = [
   { field: "title", headerName: "TITLE", width: 500 },
   { field: "userId", headerName: "USER", width: 400  },
-  { field: "id", headerName: "BODY  ", width: 450 },
+  { field: "body", headerName: "BODY  ", width: 450 },
 ];
 const options = [
   {

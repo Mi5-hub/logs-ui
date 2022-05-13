@@ -1,7 +1,6 @@
 import React from "react";
 import { setGlobalState } from "./tableSlice";
 import Pagination from "@mui/material/Pagination";
-import Stack from "@mui/material/Stack";
 
 function Paginations({
   totalLogs,

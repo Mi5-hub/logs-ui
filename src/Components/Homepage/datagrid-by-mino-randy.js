@@ -172,13 +172,8 @@ function DataGrid({
           </table>
         </div>
         <div className="tbl-content">
-          <table cellPadding="0" cellSpacing="0" border="0">
+          <table cellPadding="0" cellSpacing="0" border="0" style={{marginTop:'1px'}}>
             <tbody>
-              <tr>
-                <td className="first-column"></td>
-                <td></td>
-                <td></td>
-              </tr>
               {dataLogs.map((el, index) => (
                 <tr>
                   <td className="first-column"></td>
