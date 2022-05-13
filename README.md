@@ -13,58 +13,73 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
+### How to import the package
+```
+import DataGrid from "./Homepage/datagrid-by-mino-randy";
+```
+### Images:
+![Screenshot](image.png)  
 
-### `npm test`
+### Integral code:
+```
+import React, { useEffect, useState } from "react";
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+import axios from "axios";
+import DataGrid from "./Homepage/datagrid-by-mino-randy";
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+function HomePage() {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(
+        "https://jsonplaceholder.typicode.com/posts"
+      );
+      setData(response.data);
+    };
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    fetchData();
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  }, []);
 
-### `npm run eject`
+  return (
+    <div>
+      <DataGrid
+        data={data}
+        columns={columns}
+        options
+        pageSize={5}
+        rowsPerPageOptions={options}
+        columnHeight={3}
+        // noGlobalSearch
+        paginations
+        headPositionText={'center'}
+        bodyPositionText={'center'}
+      />
+    </div>
+  );
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+export default HomePage;
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+const columns = [
+  { field: "title", headerName: "TITLE", width: 200 },
+  { field: "userId", headerName: "USER", width: 50  },
+  { field: "body", headerName: "BODY  ", width: 450 },
+];
+const options = [
+  {
+    value: 5,
+    label: "Five",
+  },
+  {
+    value: 10,
+    label: "Ten",
+  },
+  {
+    value: 20,
+    label: "Twenty",
+  },
+];
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+``` 
