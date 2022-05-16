@@ -11,7 +11,6 @@ function DataGrid({
   data,
   pageSize,
   rowsPerPageOptions,
-  columnHeight,
   noGlobalSearch,
   options,
   paginations,
