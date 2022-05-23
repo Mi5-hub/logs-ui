@@ -1,26 +1,88 @@
 import React, { useEffect, useState } from "react";
-
 import axios from "axios";
 import DataGrid from "./Homepage/datagrid-by-mino-randy";
-
-
+import Button from "@mui/material/Button";
 function HomePage() {
   const [data, setData] = useState([]);
-
-
   useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get(
         "https://jsonplaceholder.typicode.com/posts"
       );
       setData(response.data);
-   
     };
 
     fetchData();
-
   }, []);
 
+  const columns = [
+    {
+      field: "id",
+      headerName: "RANG",
+      width: 50,
+      type: "select",
+      optionSelect: [1, 2, 3, 4, 5, 6],
+    },
+    { field: "title", headerName: "TITLE", width: 200, type: "string" },
+    { field: "id", headerName: "DATE", width: 50, type: "datetime" },
+    {
+      field: "userId",
+      headerName: "NUMBER",
+      width: 50,
+      type: "number",
+      condition: (element, field) => {
+        return element[field] > 2 ? "#d85454" : "";
+      },
+    },
+    {
+      field: "body",
+      headerName: "BODY",
+      width: 450,
+      type: "string",
+    },
+      {
+        field: "action",
+        headerName: "ACTION",
+        width: 100,
+        renderCell: (cellValues) => {
+          return (
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={(event) => {
+                handleEditRow(event, cellValues);
+              }}
+            >
+              Editer
+            </Button>
+          );
+        },
+      },
+  ];
+
+  const changeColorRow = {
+    background: (data) => {
+      var response = null;
+      if (data.id < 3) {
+        response = '#6a822fbb'
+      } else if(data.id > 3) {
+        response = '#222b'
+      }
+      return response;
+    },
+  };
+
+  const editCell = async (fullData) => {
+    console.log("====================================");
+    console.log("values******", fullData);
+    console.log("====================================");
+   
+  };
+  const handleEditRow = async (e, value) => {
+    console.log("====================================");
+    console.log("cellsValue", value);
+    console.log("====================================");
+  };
 
   return (
     <div>
@@ -33,8 +95,10 @@ function HomePage() {
         columnHeight={3}
         // noGlobalSearch
         paginations
-        headPositionText={'center'}
-        bodyPositionText={'center'}
+        changeColorRow={changeColorRow}
+        onDoubleClickFunction={editCell}
+        headPositionText={"center"}
+        // bodyPositionText={"center"}
       />
     </div>
   );
@@ -42,11 +106,6 @@ function HomePage() {
 
 export default HomePage;
 
-const columns = [
-  { field: "title", headerName: "TITLE", width: 200 },
-  { field: "userId", headerName: "NUMBER", width: 50 },
-  { field: "body", headerName: "BODY  ", width: 450 },
-];
 const options = [
   {
     value: 5,

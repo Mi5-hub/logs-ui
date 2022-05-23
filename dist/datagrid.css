@@ -1,6 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+#long-menu > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.MuiMenu-paper.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation8.MuiPopover-paper.css-1poimk-MuiPaper-root-MuiMenu-paper-MuiPaper-root-MuiPopover-paper > ul > div > button:nth-child(1){
+  margin-left: 12px;
+}
+#long-menu > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.MuiMenu-paper.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation8.MuiPopover-paper.css-1poimk-MuiPaper-root-MuiMenu-paper-MuiPaper-root-MuiPopover-paper > ul > div > button:nth-child(2){
+  margin-right: 10px;
+}
 .input_search {
     color: #ccc !important;
   }
@@ -29,7 +35,11 @@
     margin-left: 10px;
     margin-right: 10px;
   }
-  
+  .btn_generate{
+    height: 50px;
+    width: 100px;
+    background-color: brown;
+  }
   #all {
     margin-right: 7px;
   }

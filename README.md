@@ -14,60 +14,131 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
-### `npm test`
+### `integral code example`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import DataGrid from "./Homepage/datagrid-by-mino-randy";
+import Button from "@mui/material/Button";
+function HomePage() {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(
+        "https://jsonplaceholder.typicode.com/posts"
+      );
+      setData(response.data);
+    };
 
-### `npm run build`
+    fetchData();
+  }, []);
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  const columns = [
+    {
+      field: "id",
+      headerName: "RANG",
+      width: 50,
+      type: "select",
+      optionSelect: [1, 2, 3, 4, 5, 6],
+    },
+    { field: "title", headerName: "TITLE", width: 200, type: "string" },
+    { field: "id", headerName: "DATE", width: 50, type: "datetime" },
+    {
+      field: "userId",
+      headerName: "NUMBER",
+      width: 50,
+      type: "number",
+      condition: (element, field) => {
+        return element[field] > 2 ? "#d85454" : "";
+      },
+    },
+    {
+      field: "body",
+      headerName: "BODY",
+      width: 450,
+      type: "string",
+    },
+      {
+        field: "action",
+        headerName: "ACTION",
+        width: 100,
+        renderCell: (cellValues) => {
+          return (
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={(event) => {
+                handleEditRow(event, cellValues);
+              }}
+            >
+              Editer
+            </Button>
+          );
+        },
+      },
+  ];
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!x-special/nautilus-clipboard
-copy
+  const changeColorRow = {
+    background: (data) => {
+      var response = null;
+      if (data.id < 3) {
+        response = '#6a822fbb'
+      } else if(data.id > 3) {
+        response = '#222b'
+      }
+      return response;
+    },
+  };
 
+  const editCell = async (fullData) => {
+    console.log("====================================");
+    console.log("values******", fullData);
+    console.log("====================================");
+   
+  };
+  const handleEditRow = async (e, value) => {
+    console.log("====================================");
+    console.log("cellsValue", value);
+    console.log("====================================");
+  };
 
+  return (
+    <div>
+      <DataGrid
+        data={data}
+        columns={columns}
+        options
+        // pageSize={5}
+        // rowsPerPageOptions={options}
+        columnHeight={3}
+        // noGlobalSearch
+        paginations
+        changeColorRow={changeColorRow}
+        onDoubleClickFunction={editCell}
+        headPositionText={"center"}
+        // bodyPositionText={"center"}
+      />
+    </div>
+  );
+}
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+export default HomePage;
 
-### `npm run eject`
+const options = [
+  {
+    value: 5,
+    label: "Five",
+  },
+  {
+    value: 10,
+    label: "Ten",
+  },
+  {
+    value: 20,
+    label: "Twenty",
+  },
+];
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

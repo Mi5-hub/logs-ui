@@ -1,6 +1,6 @@
 {
   "name": "datagrid-by-mino-randy",
-  "version": "1.2.4",
+  "version": "2.0.1",
   "private": false,
   "babel": {
     "presets": [
@@ -14,11 +14,13 @@
     "@material-ui/icons": "^4.11.3",
     "@mui/material": "^5.6.2",
     "@mui/x-data-grid": "^5.9.0",
+    "@mui/x-date-pickers": "^5.0.0-alpha.3",
     "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.26.1",
+    "date-fns": "^2.28.0",
     "lodash": "^4.17.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",

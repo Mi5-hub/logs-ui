@@ -3,6 +3,12 @@ const {
   setGlobalState,
   useGlobalState
 } = createGlobalState({
-  currentPage: 1
+  currentPage: 1,
+  anchorEl: null,
+  currentCellData: null,
+  currentCellType: '',
+  currentCellFullData: null,
+  currentCellColumn: '',
+  optionSelect: []
 });
 export { useGlobalState, setGlobalState };

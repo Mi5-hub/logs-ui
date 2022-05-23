@@ -4,7 +4,8 @@ import MenuItem from "@mui/material/MenuItem";
 import "./Table.css";
 import FilterColumn from "./FilterColumn";
 import Paginations from "./Pagination";
-import { useGlobalState } from "./tableSlice";
+import { useGlobalState, setGlobalState } from "./tableSlice";
+import EditColumn from "./EditColumn";
 const _ = require("lodash");
 function DataGrid({
   columns,
@@ -16,16 +17,20 @@ function DataGrid({
   paginations,
   headPositionText,
   bodyPositionText,
+  onDoubleClickFunction,
+  changeColorRow,
 }) {
   const [dataLogs, setDataLogs] = useState([]);
+
   const title = [];
   columns.map((el) => {
-    title.push(el.field);
+    if (el.field !== "action") {
+      title.push(el.field);
+    }
   });
   var logsValue = {};
 
   const [logsFilter, setLogsFilter] = useState([]);
-
   //****************************** START Pagination *****************************/
 
   const [currentPage] = useGlobalState("currentPage");
@@ -59,7 +64,7 @@ function DataGrid({
     logsValue[el] = val;
     if (logsValue[el] === "") {
       title.map((i) => {
-        document.querySelector(`#${i}-head > input[type=search]`).value = "";
+        document.querySelector(`#${i}-head > input[type='search']`).value = "";
       });
       getAllLogs();
       await retraceTable();
@@ -80,6 +85,7 @@ function DataGrid({
 
   const GlobalSearchLogs = async (e) => {
     const valueSearch = e.target.value;
+
     if (valueSearch === "") {
       getAllLogs();
       await retraceTable();
@@ -88,14 +94,15 @@ function DataGrid({
       var result = [];
       logsFilter.map((element) => {
         title.map((el) => {
-          const logs = [element].filter((element) =>
-            element[el].toString().startsWith(valueSearch)
+          const logs = [element].filter((i) =>
+            i[el].toString().startsWith(valueSearch)
           );
           if (logs.length) {
             result.push(logs[0]);
           }
         });
       });
+
       setDataLogs(result);
     }
   };
@@ -142,6 +149,7 @@ function DataGrid({
         ) : null}
       </div>
       <div className="container_table">
+        <EditColumn onDoubleClickFunction={onDoubleClickFunction}></EditColumn>
         <div className="tbl-header">
           <table cellPadding="0" cellSpacing="0" border="0">
             <thead>
@@ -149,21 +157,30 @@ function DataGrid({
                 <th className="first-column">
                   <FilterColumn title={title}></FilterColumn>
                 </th>
-                {columns.map((el) => (
+                {columns.map((el,index) => (
                   <th
                     id={`${el.field}-head`}
                     style={{
                       textAlign: `${headPositionText}`,
                       width: `${el.width}px`,
                     }}
+                    key={index}
                   >
-                    <input
-                      type="search"
-                      onChange={(e) => {
-                        searchColumn(e.target.value, el.field);
-                      }}
-                      placeholder={el.headerName}
-                    ></input>
+                    {el.field !== "action" ? (
+                      <input
+                        type="search"
+                        onChange={(e) => {
+                          searchColumn(e.target.value, el.field);
+                        }}
+                        placeholder={el.headerName}
+                      ></input>
+                    ) : (
+                      <input
+                        type="search"
+                        placeholder={el.headerName}
+                        disabled
+                      ></input>
+                    )}
                   </th>
                 ))}
               </tr>
@@ -171,20 +188,45 @@ function DataGrid({
           </table>
         </div>
         <div className="tbl-content">
-          <table cellPadding="0" cellSpacing="0" border="0" style={{marginTop:'1px'}}>
+          <table
+            cellPadding="0"
+            cellSpacing="0"
+            border="0"
+            style={{ marginTop: "1px" }}
+          >
             <tbody>
               {dataLogs.map((el, index) => (
-                <tr>
+                <tr
+                  style={{
+                    background: changeColorRow
+                      ? changeColorRow.background(el)
+                      : null,
+                  }}
+                  key={index}
+                >
                   <td className="first-column"></td>
-                  {columns.map((i) => (
+                  {columns.map((i,o) => (
                     <td
+                    key={o}
+                      onDoubleClick={(event) => {
+                        setGlobalState("anchorEl", event.currentTarget);
+                        setGlobalState("currentCellData", el[i.field]);
+                        setGlobalState("currentCellType", i.type);
+                        setGlobalState("currentCellFullData", el);
+                        setGlobalState("currentCellColumn", i.field);
+                        setGlobalState("optionSelect", i.optionSelect);
+                      }}
                       className={`${i.field}`}
                       style={{
                         textAlign: `${bodyPositionText}`,
                         width: `${i.width}px`,
+                        background: i.condition
+                          ? i.condition(el, i.field)
+                          : null,
                       }}
                     >
                       {el[i.field]}
+                      {i.renderCell ? i.renderCell(el) : null}
                     </td>
                   ))}
                 </tr>

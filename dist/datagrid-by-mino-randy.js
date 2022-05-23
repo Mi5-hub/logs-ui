@@ -4,7 +4,8 @@ import MenuItem from "@mui/material/MenuItem";
 import "./Table.css";
 import FilterColumn from "./FilterColumn";
 import Paginations from "./Pagination";
-import { useGlobalState } from "./tableSlice";
+import { useGlobalState, setGlobalState } from "./tableSlice";
+import EditColumn from "./EditColumn";
 
 const _ = require("lodash");
 
@@ -13,17 +14,20 @@ function DataGrid({
   data,
   pageSize,
   rowsPerPageOptions,
-  columnHeight,
   noGlobalSearch,
   options,
   paginations,
   headPositionText,
-  bodyPositionText
+  bodyPositionText,
+  onDoubleClickFunction,
+  changeColorRow
 }) {
   const [dataLogs, setDataLogs] = useState([]);
   const title = [];
   columns.map(el => {
-    title.push(el.field);
+    if (el.field !== "action") {
+      title.push(el.field);
+    }
   });
   var logsValue = {};
   const [logsFilter, setLogsFilter] = useState([]); //****************************** START Pagination *****************************/
@@ -59,7 +63,7 @@ function DataGrid({
 
     if (logsValue[el] === "") {
       title.map(i => {
-        document.querySelector(`#${i}-head > input[type=search]`).value = "";
+        document.querySelector(`#${i}-head > input[type='search']`).value = "";
       });
       getAllLogs();
       await retraceTable();
@@ -88,7 +92,7 @@ function DataGrid({
       var result = [];
       logsFilter.map(element => {
         title.map(el => {
-          const logs = [element].filter(element => element[el].toString().startsWith(valueSearch));
+          const logs = [element].filter(i => i[el].toString().startsWith(valueSearch));
 
           if (logs.length) {
             result.push(logs[0]);
@@ -128,7 +132,9 @@ function DataGrid({
     value: option.value
   }, option.label))) : null), /*#__PURE__*/React.createElement("div", {
     className: "container_table"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(EditColumn, {
+    onDoubleClickFunction: onDoubleClickFunction
+  }), /*#__PURE__*/React.createElement("div", {
     className: "tbl-header"
   }, /*#__PURE__*/React.createElement("table", {
     cellPadding: "0",
@@ -138,18 +144,23 @@ function DataGrid({
     className: "first-column"
   }, /*#__PURE__*/React.createElement(FilterColumn, {
     title: title
-  })), columns.map(el => /*#__PURE__*/React.createElement("th", {
+  })), columns.map((el, index) => /*#__PURE__*/React.createElement("th", {
     id: `${el.field}-head`,
     style: {
       textAlign: `${headPositionText}`,
       width: `${el.width}px`
-    }
-  }, /*#__PURE__*/React.createElement("input", {
+    },
+    key: index
+  }, el.field !== "action" ? /*#__PURE__*/React.createElement("input", {
     type: "search",
     onChange: e => {
       searchColumn(e.target.value, el.field);
     },
     placeholder: el.headerName
+  }) : /*#__PURE__*/React.createElement("input", {
+    type: "search",
+    placeholder: el.headerName,
+    disabled: true
   }))))))), /*#__PURE__*/React.createElement("div", {
     className: "tbl-content"
   }, /*#__PURE__*/React.createElement("table", {
@@ -157,17 +168,32 @@ function DataGrid({
     cellSpacing: "0",
     border: "0",
     style: {
-      marginTop: '1px'
+      marginTop: "1px"
     }
-  }, /*#__PURE__*/React.createElement("tbody", null, dataLogs.map((el, index) => /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+  }, /*#__PURE__*/React.createElement("tbody", null, dataLogs.map((el, index) => /*#__PURE__*/React.createElement("tr", {
+    style: {
+      background: changeColorRow ? changeColorRow.background(el) : null
+    },
+    key: index
+  }, /*#__PURE__*/React.createElement("td", {
     className: "first-column"
-  }), columns.map(i => /*#__PURE__*/React.createElement("td", {
+  }), columns.map((i, o) => /*#__PURE__*/React.createElement("td", {
+    key: o,
+    onDoubleClick: event => {
+      setGlobalState("anchorEl", event.currentTarget);
+      setGlobalState("currentCellData", el[i.field]);
+      setGlobalState("currentCellType", i.type);
+      setGlobalState("currentCellFullData", el);
+      setGlobalState("currentCellColumn", i.field);
+      setGlobalState("optionSelect", i.optionSelect);
+    },
     className: `${i.field}`,
     style: {
       textAlign: `${bodyPositionText}`,
-      width: `${i.width}px`
+      width: `${i.width}px`,
+      background: i.condition ? i.condition(el, i.field) : null
     }
-  }, el[i.field])))))))), paginations ? /*#__PURE__*/React.createElement(Paginations, {
+  }, el[i.field], i.renderCell ? i.renderCell(el) : null)))))))), paginations ? /*#__PURE__*/React.createElement(Paginations, {
     getAllLogs: getAllLogs,
     currentPage: currentPage,
     retraceTable: retraceTable,
