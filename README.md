@@ -19,7 +19,7 @@ You may also see any lint errors in the console.
 ```
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import DataGrid from "./Homepage/datagrid-by-mino-randy";
+import DataGrid from "datagrid-by-mino-randy/dist/datagrid-by-mino-randy";
 import Button from "@mui/material/Button";
 function HomePage() {
   const [data, setData] = useState([]);
