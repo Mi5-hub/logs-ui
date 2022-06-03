@@ -7,8 +7,6 @@ import Paginations from "./Pagination";
 import { useGlobalState, setGlobalState } from "./tableSlice";
 import EditColumn from "./EditColumn";
 
-const _ = require("lodash");
-
 function DataGrid({
   columns,
   data,
@@ -23,7 +21,14 @@ function DataGrid({
   changeColorRow
 }) {
   const [dataLogs, setDataLogs] = useState([]);
+  const [dataImport] = useGlobalState("dataImport");
+  const [columnImport] = useGlobalState("columnImport");
   const title = [];
+
+  if (!columns.length) {
+    columns = columnImport;
+  }
+
   columns.map(el => {
     if (el.field !== "action") {
       title.push(el.field);
@@ -38,13 +43,18 @@ function DataGrid({
   const indexOfFirstPost = indexOfLastPost - logsPerPage; //****************************** END Pagination *****************************/
 
   const getAllLogs = async () => {
-    setLogsFilter(data);
-    setDataLogs(data.slice(indexOfFirstPost, indexOfLastPost));
+    if (data.length) {
+      setLogsFilter(data);
+      setDataLogs(data.slice(indexOfFirstPost, indexOfLastPost));
+    } else {
+      await setLogsFilter(dataImport);
+      await setDataLogs(dataImport.slice(indexOfFirstPost, indexOfLastPost));
+    }
   };
 
   useEffect(() => {
     getAllLogs();
-  }, [currentPage, logsPerPage, data, pageSize]);
+  }, [currentPage, logsPerPage, data, pageSize, dataImport]);
 
   const retraceTable = async () => {
     title.map(el => {
@@ -70,7 +80,7 @@ function DataGrid({
     } else {
       var result = [];
       logsFilter.map(element => {
-        const logs = [element].filter(element => element[el].toString().startsWith(val));
+        const logs = [element].filter(element => element[el].toString().toLowerCase().startsWith(val));
 
         if (logs.length) {
           result.push(logs[0]);
@@ -92,7 +102,7 @@ function DataGrid({
       var result = [];
       logsFilter.map(element => {
         title.map(el => {
-          const logs = [element].filter(i => i[el].toString().startsWith(valueSearch));
+          const logs = [element].filter(i => i[el].toString().toLowerCase().startsWith(valueSearch));
 
           if (logs.length) {
             result.push(logs[0]);
@@ -133,7 +143,8 @@ function DataGrid({
   }, option.label))) : null), /*#__PURE__*/React.createElement("div", {
     className: "container_table"
   }, /*#__PURE__*/React.createElement(EditColumn, {
-    onDoubleClickFunction: onDoubleClickFunction
+    onDoubleClickFunction: onDoubleClickFunction,
+    getAllLogs: getAllLogs
   }), /*#__PURE__*/React.createElement("div", {
     className: "tbl-header"
   }, /*#__PURE__*/React.createElement("table", {

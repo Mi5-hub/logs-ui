@@ -13,14 +13,15 @@ const _ = require("lodash");
 
 const ITEM_HEIGHT = 60;
 export default function EditColumn({
-  onDoubleClickFunction
+  onDoubleClickFunction,
+  getAllLogs
 }) {
   const [anchorEl] = useGlobalState("anchorEl");
   const [valueCell] = useGlobalState("currentCellData");
   const [typeCell] = useGlobalState("currentCellType");
   const [fullData] = useGlobalState("currentCellFullData");
   const [columnField] = useGlobalState("currentCellColumn");
-  const [optionSelect] = useGlobalState('optionSelect');
+  const [optionSelect] = useGlobalState("optionSelect");
   const open = Boolean(anchorEl);
 
   const handleClose = () => {
@@ -31,6 +32,7 @@ export default function EditColumn({
     fullData[columnField] = valueCell;
     await onDoubleClickFunction(fullData);
     await handleClose();
+    await getAllLogs();
   };
 
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Menu, {
@@ -59,7 +61,7 @@ export default function EditColumn({
   })) : typeCell === "select" ? /*#__PURE__*/React.createElement(TextField, {
     id: "standard-select-currency",
     style: {
-      width: '250px'
+      width: "250px"
     },
     select: true,
     label: columnField,
