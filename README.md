@@ -15,7 +15,7 @@ The page will reload when you make changes.\
 You may also see any lint errors in the console.
 ### images
 ![image_upload](https://github.com/Mi5-hub/logs-ui/blob/main/Screenshot%202022-06-03%20at%2017-20-57%20React%20App.png)
-
+![image_upload](https://github.com/Mi5-hub/logs-ui/blob/main/Screenshot%202022-05-13%20at%2015-00-29%20React%20App.png)
 ### `integral code example`
 
 ```
