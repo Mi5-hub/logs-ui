@@ -20,18 +20,30 @@ function HomePage() {
       field: "id",
       headerName: "RANG",
       width: 50,
-      type: "select",
+      type: "datetime",
       optionSelect: [1, 2, 3, 4, 5, 6],
     },
-    { field: "title", headerName: "TITLE", width: 200, type: "string" },
-    { field: "id", headerName: "DATE", width: 50, type: "datetime" },
+    {
+      field: "title",
+      headerName: "DATE",
+      width: 200,
+      type: "select",
+      optionSelect: [
+        "qui est esse",
+        "eum et est occaecati",
+        "nesciunt quas odio",
+        "magnam facilis autem",
+        "dolorem dolore est ipsam",
+        "optio molestias id quia eum",
+      ],
+    },
     {
       field: "userId",
       headerName: "NUMBER",
       width: 50,
       type: "number",
       condition: (element, field) => {
-        return element[field] > 2 ? "#d85454" : "";
+        return element[field] > 10 ? "#d85454" : "";
       },
     },
     {
@@ -40,33 +52,33 @@ function HomePage() {
       width: 450,
       type: "string",
     },
-      {
-        field: "action",
-        headerName: "ACTION",
-        width: 100,
-        renderCell: (cellValues) => {
-          return (
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={(event) => {
-                handleEditRow(event, cellValues);
-              }}
-            >
-              Editer
-            </Button>
-          );
-        },
+    {
+      field: "action",
+      headerName: "ACTION",
+      width: 100,
+      renderCell: (cellValues) => {
+        return (
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={(event) => {
+              handleEditRow(event, cellValues);
+            }}
+          >
+            Editer
+          </Button>
+        );
       },
+    },
   ];
 
   const changeColorRow = {
     background: (data) => {
       var response = null;
-      if (data.id < 3) {
-        response = '#6a822fbb'
-      } else if(data.id > 3) {
-        response = '#222b'
+      if (data.id === 12) {
+        response = "#6a822fbb";
+      } else if (data.id > 10) {
+        response = "#222b";
       }
       return response;
     },
@@ -76,7 +88,6 @@ function HomePage() {
     console.log("====================================");
     console.log("values******", fullData);
     console.log("====================================");
-   
   };
   const handleEditRow = async (e, value) => {
     console.log("====================================");
@@ -87,17 +98,17 @@ function HomePage() {
   return (
     <div>
       <DataGrid
-        data={data}
-        columns={columns}
+        data={''}
+        columns={''}
         options
         // pageSize={5}
         // rowsPerPageOptions={options}
         columnHeight={3}
         // noGlobalSearch
         paginations
-        changeColorRow={changeColorRow}
+        // changeColorRow={changeColorRow}
         onDoubleClickFunction={editCell}
-        headPositionText={"center"}
+        // headPositionText={"center"}
         // bodyPositionText={"center"}
       />
     </div>

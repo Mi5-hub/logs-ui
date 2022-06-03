@@ -5,16 +5,22 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import "./datagrid.css"
-const _ = require("lodash");
+import { Fab } from "@material-ui/core";
+import AddCardIcon from '@mui/icons-material/AddCard';
 
+import "./datagrid.css";
+import * as xlsx from "xlsx/xlsx.mjs";
+import { setGlobalState, useGlobalState } from "./tableSlice";
+import { useCSVReader } from "react-papaparse";
+const _ = require("lodash");
 const ITEM_HEIGHT = 60;
 
-export default function FilterColumn({title}) {
+export default function FilterColumn({ title }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isHideAll, setIsHideAll] = useState(false);
   const [titleFiltered, setTitleFiltered] = useState([]);
   const [clear, setClear] = useState(false);
+  const [dataImport] = useGlobalState("dataImport");
   const open = Boolean(anchorEl);
   const getTitle = async () => {
     setTitleFiltered(title);
@@ -47,7 +53,7 @@ export default function FilterColumn({title}) {
   const handleClose = () => {
     getTitle();
     setAnchorEl(null);
-    setClear(false)
+    setClear(false);
   };
 
   const filterColumn = async (val) => {
@@ -89,6 +95,51 @@ export default function FilterColumn({title}) {
     (await isHideAll) ? hideAll() : showAll();
     await setCheckboxStatus();
   };
+  const formatColumn = (data) => {
+    const values = Object.values(data[0]);
+    const keys = Object.keys(data[0]);
+    console.log("====================================");
+    console.log(keys);
+    console.log("====================================");
+    var result = [];
+    for (let index = 0; index < values.length; index++) {
+      result.push({
+        field: keys[index],
+        headerName: `${keys[index].toUpperCase()}`,
+        type: `${typeof values[index]}`,
+      });
+    }
+    console.log("====================================");
+    console.log("column", result);
+    console.log("====================================");
+    return result;
+  };
+  const formatDataImport = (data) => {
+    var result = [];
+    data.map((element) => {
+      var { __rowNum__, ...rest } = element;
+      result.push(rest);
+    });
+    return result;
+  };
+  const readUploadFile = (e) => {
+    e.preventDefault();
+    if (e.target.files) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = xlsx.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = xlsx.utils.sheet_to_json(worksheet);
+        console.log(formatDataImport(json));
+        setGlobalState("dataImport", formatDataImport(json));
+        setGlobalState("columnImport", formatColumn(formatDataImport(json)));
+      };
+      reader.readAsArrayBuffer(e.target.files[0]);
+    }
+  };
+
   return (
     <div>
       <IconButton
@@ -116,6 +167,19 @@ export default function FilterColumn({title}) {
           },
         }}
       >
+        <label htmlFor="upload-photo">
+          <input
+            style={{ display: "none" }}
+            id="upload-photo"
+            name="upload-photo"
+            type="file"
+            onChange={readUploadFile}
+          />
+
+          <Fab color="primary" size="small" component="span" aria-label="add">
+            <AddCardIcon />
+          </Fab>
+        </label>
         <MenuItem>
           <div className="container_filter_x">
             <TextField

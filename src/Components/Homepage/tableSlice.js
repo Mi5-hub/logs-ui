@@ -7,7 +7,9 @@ const { setGlobalState, useGlobalState } = createGlobalState({
   currentCellType:'',
   currentCellFullData:null,
   currentCellColumn:'',
-  optionSelect:[]
+  optionSelect:[],
+  dataImport:[],
+  columnImport:[]
 });
 
 export { useGlobalState, setGlobalState };

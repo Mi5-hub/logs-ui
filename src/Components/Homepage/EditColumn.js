@@ -12,13 +12,13 @@ const _ = require("lodash");
 
 const ITEM_HEIGHT = 60;
 
-export default function EditColumn({ onDoubleClickFunction }) {
+export default function EditColumn({ onDoubleClickFunction, getAllLogs }) {
   const [anchorEl] = useGlobalState("anchorEl");
   const [valueCell] = useGlobalState("currentCellData");
   const [typeCell] = useGlobalState("currentCellType");
   const [fullData] = useGlobalState("currentCellFullData");
   const [columnField] = useGlobalState("currentCellColumn");
-  const [optionSelect] = useGlobalState('optionSelect')
+  const [optionSelect] = useGlobalState("optionSelect");
   const open = Boolean(anchorEl);
 
   const handleClose = () => {
@@ -29,6 +29,7 @@ export default function EditColumn({ onDoubleClickFunction }) {
     fullData[columnField] = valueCell;
     await onDoubleClickFunction(fullData);
     await handleClose();
+    await getAllLogs();
   };
 
   return (
@@ -54,8 +55,8 @@ export default function EditColumn({ onDoubleClickFunction }) {
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 {" "}
                 <DateTimePicker
-                label={columnField}
-                  value={valueCell}                                                                       
+                  label={columnField}
+                  value={valueCell}
                   onChange={(e) => setGlobalState("currentCellData", e)}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -63,7 +64,7 @@ export default function EditColumn({ onDoubleClickFunction }) {
             ) : typeCell === "select" ? (
               <TextField
                 id="standard-select-currency"
-                style={{width:'250px'}}
+                style={{ width: "250px" }}
                 select
                 label={columnField}
                 value={valueCell}
@@ -105,5 +106,3 @@ export default function EditColumn({ onDoubleClickFunction }) {
     </div>
   );
 }
-
-

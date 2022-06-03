@@ -6,7 +6,7 @@ import FilterColumn from "./FilterColumn";
 import Paginations from "./Pagination";
 import { useGlobalState, setGlobalState } from "./tableSlice";
 import EditColumn from "./EditColumn";
-const _ = require("lodash");
+
 function DataGrid({
   columns,
   data,
@@ -21,16 +21,22 @@ function DataGrid({
   changeColorRow,
 }) {
   const [dataLogs, setDataLogs] = useState([]);
-
+  const [dataImport] = useGlobalState("dataImport");
+  const [columnImport] = useGlobalState("columnImport");
   const title = [];
+  if (!columns.length) {
+    columns = columnImport;
+  }
   columns.map((el) => {
     if (el.field !== "action") {
       title.push(el.field);
     }
   });
+
   var logsValue = {};
 
   const [logsFilter, setLogsFilter] = useState([]);
+
   //****************************** START Pagination *****************************/
 
   const [currentPage] = useGlobalState("currentPage");
@@ -41,13 +47,18 @@ function DataGrid({
   //****************************** END Pagination *****************************/
 
   const getAllLogs = async () => {
-    setLogsFilter(data);
-    setDataLogs(data.slice(indexOfFirstPost, indexOfLastPost));
+    if (data.length) {
+      setLogsFilter(data);
+      setDataLogs(data.slice(indexOfFirstPost, indexOfLastPost));
+    } else {
+      await setLogsFilter(dataImport);
+      await setDataLogs(dataImport.slice(indexOfFirstPost, indexOfLastPost));
+    }
   };
 
   useEffect(() => {
     getAllLogs();
-  }, [currentPage, logsPerPage, data, pageSize]);
+  }, [currentPage, logsPerPage, data, pageSize, dataImport]);
 
   const retraceTable = async () => {
     title.map((el) => {
@@ -72,7 +83,7 @@ function DataGrid({
       var result = [];
       logsFilter.map((element) => {
         const logs = [element].filter((element) =>
-          element[el].toString().startsWith(val)
+          element[el].toString().toLowerCase().startsWith(val)
         );
         if (logs.length) {
           result.push(logs[0]);
@@ -95,7 +106,7 @@ function DataGrid({
       logsFilter.map((element) => {
         title.map((el) => {
           const logs = [element].filter((i) =>
-            i[el].toString().startsWith(valueSearch)
+            i[el].toString().toLowerCase().startsWith(valueSearch)
           );
           if (logs.length) {
             result.push(logs[0]);
@@ -149,7 +160,7 @@ function DataGrid({
         ) : null}
       </div>
       <div className="container_table">
-        <EditColumn onDoubleClickFunction={onDoubleClickFunction}></EditColumn>
+        <EditColumn onDoubleClickFunction={onDoubleClickFunction} getAllLogs={getAllLogs}></EditColumn>
         <div className="tbl-header">
           <table cellPadding="0" cellSpacing="0" border="0">
             <thead>
@@ -157,7 +168,7 @@ function DataGrid({
                 <th className="first-column">
                   <FilterColumn title={title}></FilterColumn>
                 </th>
-                {columns.map((el,index) => (
+                {columns.map((el, index) => (
                   <th
                     id={`${el.field}-head`}
                     style={{
@@ -205,9 +216,9 @@ function DataGrid({
                   key={index}
                 >
                   <td className="first-column"></td>
-                  {columns.map((i,o) => (
+                  {columns.map((i, o) => (
                     <td
-                    key={o}
+                      key={o}
                       onDoubleClick={(event) => {
                         setGlobalState("anchorEl", event.currentTarget);
                         setGlobalState("currentCellData", el[i.field]);
